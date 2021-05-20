@@ -1,0 +1,11 @@
+name: EnchantBottleCompression
+version: ${project.version}
+main: ubiquitaku.enchantbottlecompression.EnchantBottleCompression
+api-version: 1.16
+commands:
+  ebottlec:
+permissions:
+  ebc.use:
+    default: *
+  ebc.op:
+    default: op
