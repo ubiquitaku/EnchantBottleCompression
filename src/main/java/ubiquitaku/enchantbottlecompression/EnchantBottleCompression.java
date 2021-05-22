@@ -1,10 +1,12 @@
 package ubiquitaku.enchantbottlecompression;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -13,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-public final class EnchantBottleCompression extends JavaPlugin {
+public final class EnchantBottleCompression extends JavaPlugin implements Listener {
     FileConfiguration config;
     String prefix;
     boolean ebc;
@@ -25,12 +27,14 @@ public final class EnchantBottleCompression extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        Bukkit.getPluginManager().registerEvents(this,this);
         saveDefaultConfig();
         config = getConfig();
         prefix = config.getString("prefix","§l[§a§lEBC§r§l]§r");
         ebc = config.getBoolean("EBC",false);
         saveConfig();
         config = getConfig();
+        ebcMeta = ebcStack.getItemMeta();
         ebcMeta.setDisplayName("§a§lEnchantmentBottle");
         ebcMeta.setLore(Arrays.asList("圧縮されたエンチャント便","メインハンドに持っているときは使用できない","しかし不具合防止のためそれ以外では使えるが","ただのエンチャント瓶と効果は変わらない"));
         ebcStack.setItemMeta(ebcMeta);
@@ -60,6 +64,8 @@ public final class EnchantBottleCompression extends JavaPlugin {
                 ebc = true;
                 config.set("EBC",true);
                 sender.sendMessage(prefix+"onにしました");
+                saveConfig();
+                config = getConfig();
                 return true;
             }
             if (args[0].equals("off")) {
@@ -70,6 +76,8 @@ public final class EnchantBottleCompression extends JavaPlugin {
                 ebc = false;
                 config.set("EBC",false);
                 sender.sendMessage(prefix+"offにしました");
+                saveConfig();
+                config = getConfig();
                 return true;
             }
         }
@@ -79,38 +87,39 @@ public final class EnchantBottleCompression extends JavaPlugin {
     @EventHandler
     public void onCompression(PlayerInteractEvent e) {
         if (e.getAction() == Action.LEFT_CLICK_AIR) {
-            return;
-        }
-        if (e.getPlayer().getInventory().getItemInMainHand().getType() != Material.EXPERIENCE_BOTTLE) {
-            return;
-        }
-        if (e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
-            if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
+            if (e.getPlayer().getInventory().getItemInMainHand().getType() != Material.EXPERIENCE_BOTTLE) {
                 return;
             }
-            if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§a§lEnchantmentBottle")) {
-                //１個消して64個のepボトル渡す
-                if (!ebc) {
-                    e.getPlayer().sendMessage(prefix+"現在停止されているため交換できません");
+            if (e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
+                if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
                     return;
                 }
-                e.getPlayer().getInventory().remove(ebcStack);
-                e.getPlayer().getInventory().addItem(normalBottle);
-                e.getPlayer().sendMessage(prefix+"ボトルを解凍しました");
-                return;
+                if (e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§a§lEnchantmentBottle")) {
+                    //１個消して64個のepボトル渡す
+                    if (!ebc) {
+                        e.getPlayer().sendMessage(prefix + "現在停止されているため交換できません");
+                        return;
+                    }
+                    e.getPlayer().getInventory().remove(ebcStack);
+                    for (int i = 0; i < 64; i++) {
+                        e.getPlayer().getInventory().addItem(normalBottle);
+                    }
+                    e.getPlayer().sendMessage(prefix + "ボトルを解凍しました");
+                    return;
+                }
             }
-        }
-        if (e.getPlayer().getInventory().getItemInMainHand().getAmount() == 64) {
-            //64個消して１個の圧縮ボトルを渡す
-            if (!ebc) {
-                e.getPlayer().sendMessage(prefix+"現在停止されているため交換できません");
-                return;
+            if (e.getPlayer().getInventory().getItemInMainHand().getAmount() == 64) {
+                //64個消して１個の圧縮ボトルを渡す
+                if (!ebc) {
+                    e.getPlayer().sendMessage(prefix + "現在停止されているため交換できません");
+                    return;
+                }
+                for (int i = 0; i < 64; i++) {
+                    e.getPlayer().getInventory().removeItem(normalBottle);
+                }
+                e.getPlayer().getInventory().addItem(ebcStack);
+                e.getPlayer().sendMessage(prefix + "ボトルを圧縮しました");
             }
-            for (int i = 0;i < 64;i++) {
-                e.getPlayer().getInventory().removeItem(normalBottle);
-            }
-            e.getPlayer().getInventory().addItem(ebcStack);
-            e.getPlayer().sendMessage(prefix+"ボトルを圧縮しました");
         }
     }
 

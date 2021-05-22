@@ -3,9 +3,10 @@ version: ${project.version}
 main: ubiquitaku.enchantbottlecompression.EnchantBottleCompression
 api-version: 1.16
 commands:
-  ebottlec:
+  ebottole:
+    description: ((┗(┏ヽ ՞ةڼ◔`┛)┓))ア゛ア゛ア゛ア゛ア゛ア゛ア
 permissions:
   ebc.use:
-    default: *
+    default: true
   ebc.op:
     default: op
