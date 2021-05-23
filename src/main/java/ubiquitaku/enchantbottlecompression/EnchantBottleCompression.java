@@ -90,6 +90,7 @@ public final class EnchantBottleCompression extends JavaPlugin implements Listen
             if (e.getPlayer().getInventory().getItemInMainHand().getType() != Material.EXPERIENCE_BOTTLE) {
                 return;
             }
+            e.setCancelled(true);
             if (e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
                 if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
                     return;
@@ -100,7 +101,7 @@ public final class EnchantBottleCompression extends JavaPlugin implements Listen
                         e.getPlayer().sendMessage(prefix + "現在停止されているため交換できません");
                         return;
                     }
-                    e.getPlayer().getInventory().remove(ebcStack);
+                    e.getPlayer().getInventory().removeItem(ebcStack);
                     for (int i = 0; i < 64; i++) {
                         e.getPlayer().getInventory().addItem(normalBottle);
                     }
@@ -123,21 +124,21 @@ public final class EnchantBottleCompression extends JavaPlugin implements Listen
         }
     }
 
-    @EventHandler
-    public void onUse(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-        if (!e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
-            return;
-        }
-        if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
-            return;
-        }
-        if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§a§lEnchantmentBottle")) {
-            return;
-        }
-        e.getPlayer().sendMessage(prefix+"そのアイテムを使うことはできません");
-        e.setCancelled(true);
-    }
+//    @EventHandler
+//    public void onUse(PlayerInteractEvent e) {
+//        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) {
+//            return;
+//        }
+//        if (!e.getPlayer().getInventory().getItemInMainHand().hasItemMeta()) {
+//            return;
+//        }
+//        if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().hasDisplayName()) {
+//            return;
+//        }
+//        if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("§a§lEnchantmentBottle")) {
+//            return;
+//        }
+//        e.getPlayer().sendMessage(prefix+"そのアイテムを使うことはできません");
+//        e.setCancelled(true);
+//    }
 }

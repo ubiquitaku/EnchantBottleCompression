@@ -7,6 +7,6 @@ commands:
     description: ((┗(┏ヽ ՞ةڼ◔`┛)┓))ア゛ア゛ア゛ア゛ア゛ア゛ア
 permissions:
   ebc.use:
-    default: true
+    default: '*'
   ebc.op:
     default: op
